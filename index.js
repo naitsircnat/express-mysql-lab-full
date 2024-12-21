@@ -55,6 +55,21 @@ async function main() {
       customers: customers,
     });
   });
+
+  // Create customer
+  /*
+  Get companies
+  - create app.get with appropriate URL
+  - create customers/create page with relevant fields   
+  */
+
+  app.get("/customers/create", async (req, res) => {
+    let [companies] = await connection.execute("SELECT * FROM Companies");
+
+    res.render("customers/create", {
+      companies: companies,
+    });
+  });
 }
 
 main();
