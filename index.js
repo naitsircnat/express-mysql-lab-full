@@ -8,10 +8,10 @@ app.listen
 */
 
 const express = require("express");
-const { handle } = require("express/lib/application");
 const hbs = require("hbs");
 const wax = require("wax-on");
 require("dotenv").config();
+const { createConnection } = require("mysql2/promise");
 
 let app = express();
 
@@ -27,9 +27,37 @@ helpers({
   handlebars: hbs.handlebars,
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello, World");
-});
+let connection;
+
+async function main() {
+  connection = await createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+  });
+
+  app.get("/", (req, res) => {
+    res.send("Hello, World");
+  });
+
+  // Show customers
+  app.get("/customers", async (req, res) => {
+    let [customers] = await connection.execute({
+      sql: `
+      SELECT * FROM Customers JOIN Companies ON Customers.company_id=Companies.company_id`,
+      nestTables: true,
+    });
+
+    console.log(customers);
+
+    res.render("customers/index", {
+      customers: customers,
+    });
+  });
+}
+
+main();
 
 app.listen(3000, () => {
   console.log("Server started");
