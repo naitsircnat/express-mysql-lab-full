@@ -60,12 +60,6 @@ async function main() {
     });
   });
 
-  /*
-  - get relevant fields and employeeId from params
-  - Add employee to SQL
-  - Add data to employeeCustomer table
-  */
-
   app.post("/customers/create", async (req, res) => {
     const { first_name, last_name, rating, company_id, employee_id } = req.body;
 
@@ -99,9 +93,20 @@ async function main() {
 
     const [companies] = await connection.execute("SELECT * FROM Companies");
 
+    const [employees] = await connection.execute("SELECT * FROM Employees");
+
+    const [customerEmployeeRows] = await connection.execute(
+      "SELECT * FROM EmployeeCustomer WHERE customer_id=?",
+      [req.params.customerId]
+    );
+
+    const relatedEmployees = customerEmployeeRows.map((ec) => ec.employee_id);
+
     res.render("customers/edit", {
       customer: customer,
       companies: companies,
+      employees: employees,
+      relatedEmployees: relatedEmployees,
     });
   });
 
