@@ -70,14 +70,6 @@ async function main() {
   });
 
   // update customer
-  /*
-  - create app.get to create form, with relevant URL
-  - assign customer ID as variable using req.params
-  - get customer from database
-  - get list of companies
-  - pass companies and customer to handlebars
-  */
-
   app.get("/customers/:customerId/edit", async (req, res) => {
     const [customers] = await connection.execute(
       "SELECT * FROM Customers WHERE customer_id=?",
@@ -92,6 +84,24 @@ async function main() {
       customer: customer,
       companies: companies,
     });
+  });
+
+  /*
+  - use app.post and relevant url
+  - store relevant data in variables
+  - perform update in sql (using prepared statements)
+  - respond with customers listing page
+  */
+
+  app.post("/customers/:customerId/edit", async (req, res) => {
+    const { first_name, last_name, rating, company_id } = req.body;
+
+    await connection.execute(
+      "UPDATE Customers SET first_name=?, last_name=?, rating=?, company_id=? WHERE customer_id=?",
+      [first_name, last_name, rating, company_id, req.params.customerId]
+    );
+
+    res.redirect("/customers");
   });
 }
 
