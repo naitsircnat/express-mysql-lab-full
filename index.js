@@ -52,20 +52,39 @@ async function main() {
   app.get("/customers/create", async (req, res) => {
     let [companies] = await connection.execute("SELECT * FROM Companies");
 
+    let [employees] = await connection.execute("SELECT * FROM Employees");
+
     res.render("customers/create", {
       companies: companies,
+      employees: employees,
     });
   });
 
+  /*
+  - get relevant fields and employeeId from params
+  - Add employee to SQL
+  - Add data to employeeCustomer table
+  */
+
   app.post("/customers/create", async (req, res) => {
-    const { first_name, last_name, rating, company_id } = req.body;
+    const { first_name, last_name, rating, company_id, employee_id } = req.body;
 
     let query =
       "INSERT INTO Customers (first_name, last_name, rating, company_id) VALUES (?, ?, ?, ?)";
 
     let bindings = [first_name, last_name, rating, company_id];
 
-    let results = await connection.execute(query, bindings);
+    let [result] = await connection.execute(query, bindings);
+
+    let insertedEmployeeId = result.insertId;
+
+    for (let id of employee_id) {
+      await connection.execute(
+        "INSERT INTO EmployeeCustomer (employee_id, customer_id) VALUES (?,?)",
+        [id, insertedEmployeeId]
+      );
+    }
+
     res.redirect("/customers");
   });
 
@@ -85,13 +104,6 @@ async function main() {
       companies: companies,
     });
   });
-
-  /*
-  - use app.post and relevant url
-  - store relevant data in variables
-  - perform update in sql (using prepared statements)
-  - respond with customers listing page
-  */
 
   app.post("/customers/:customerId/edit", async (req, res) => {
     const { first_name, last_name, rating, company_id } = req.body;
