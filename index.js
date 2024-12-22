@@ -68,6 +68,31 @@ async function main() {
     let results = await connection.execute(query, bindings);
     res.redirect("/customers");
   });
+
+  // update customer
+  /*
+  - create app.get to create form, with relevant URL
+  - assign customer ID as variable using req.params
+  - get customer from database
+  - get list of companies
+  - pass companies and customer to handlebars
+  */
+
+  app.get("/customers/:customerId/edit", async (req, res) => {
+    const [customers] = await connection.execute(
+      "SELECT * FROM Customers WHERE customer_id=?",
+      [req.params.customerId]
+    );
+
+    const customer = customers[0];
+
+    const [companies] = await connection.execute("SELECT * FROM Companies");
+
+    res.render("customers/edit", {
+      customer: customer,
+      companies: companies,
+    });
+  });
 }
 
 main();
