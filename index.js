@@ -111,12 +111,24 @@ async function main() {
   });
 
   app.post("/customers/:customerId/edit", async (req, res) => {
-    const { first_name, last_name, rating, company_id } = req.body;
+    const { first_name, last_name, rating, company_id, employee_id } = req.body;
 
     await connection.execute(
       "UPDATE Customers SET first_name=?, last_name=?, rating=?, company_id=? WHERE customer_id=?",
       [first_name, last_name, rating, company_id, req.params.customerId]
     );
+
+    await connection.execute(
+      "DELETE FROM EmployeeCustomer WHERE customer_id=?",
+      [req.params.customerId]
+    );
+
+    for (let id of employee_id) {
+      await connection.execute(
+        "INSERT INTO EmployeeCustomer (customer_id, employee_id) VALUES (?, ?)",
+        [req.params.customerId, id]
+      );
+    }
 
     res.redirect("/customers");
   });
