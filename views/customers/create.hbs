@@ -6,12 +6,12 @@
     <form method="POST">
       <div class="mb-3">
         <label>First Name</label>
-        <input type="text" class="form-control" name="first-name" />
+        <input type="text" class="form-control" name="first_name" />
       </div>
 
       <div class="mb-3">
         <label>Last Name</label>
-        <input type="text" class="form-control" name="last-name" />
+        <input type="text" class="form-control" name="last_name" />
       </div>
 
       <div class="mb-3">
@@ -21,11 +21,11 @@
 
       <div class="mb-3">
         <label>Company</label>
-        <select class="form-control" name="company_id" />
+        <select class="form-control" name="company_id">
 
-        {{#each companies}}
-          <option value="{{company_id}}">{{name}}</option>
-        {{/each}}
+          {{#each companies}}
+            <option value="{{company_id}}">{{name}}</option>
+          {{/each}}
 
         </select>
       </div>

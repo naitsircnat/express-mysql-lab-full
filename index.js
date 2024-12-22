@@ -1,12 +1,3 @@
-/*
-installations - wax-on, express, handlebars-helpers, hbs, dotenv, 
-folders
-require
-handlebars-helpers
-test route
-app.listen
-*/
-
 const express = require("express");
 const hbs = require("hbs");
 const wax = require("wax-on");
@@ -57,11 +48,6 @@ async function main() {
   });
 
   // Create customer
-  /*
-  Get companies
-  - create app.get with appropriate URL
-  - create customers/create page with relevant fields   
-  */
 
   app.get("/customers/create", async (req, res) => {
     let [companies] = await connection.execute("SELECT * FROM Companies");
@@ -69,6 +55,18 @@ async function main() {
     res.render("customers/create", {
       companies: companies,
     });
+  });
+
+  app.post("/customers/create", async (req, res) => {
+    const { first_name, last_name, rating, company_id } = req.body;
+
+    let query =
+      "INSERT INTO Customers (first_name, last_name, rating, company_id) VALUES (?, ?, ?, ?)";
+
+    let bindings = [first_name, last_name, rating, company_id];
+
+    let results = await connection.execute(query, bindings);
+    res.redirect("/customers");
   });
 }
 
