@@ -154,6 +154,8 @@ app.post("/customers/:customerId/delete", async (req, res) => {
     await connection.execute("DELETE FROM Customers WHERE customer_id=?", [
       req.params.customerId,
     ]);
+
+    res.redirect("/customers");
   } catch (e) {
     res.render("error", { errorMessage: "Unable to delete customer" });
   }
