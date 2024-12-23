@@ -37,7 +37,7 @@
         <label>Employees</label>
         <select name="employee_id" class="form-control" multiple>
 
-          {{#each employees}}
+          {{#eachexit; employees}}
 
             <option value="{{employee_id}}" {{#inArray ../relatedEmployees employee_id}}selected
             {{/inArray}}>

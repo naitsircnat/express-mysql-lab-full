@@ -132,7 +132,32 @@ async function main() {
 
     res.redirect("/customers");
   });
+
+  // Delete customer
+
+  app.get("/customers/:customerId/delete", async (req, res) => {
+    const [customers] = await connection.execute(
+      "SELECT * from Customers WHERE customer_id=?",
+      [req.params.customerId]
+    );
+
+    const customer = customers[0];
+
+    res.render("customers/delete", {
+      customer: customer,
+    });
+  });
 }
+
+app.post("/customers/:customerId/delete", async (req, res) => {
+  try {
+    await connection.execute("DELETE FROM Customers WHERE customer_id=?", [
+      req.params.customerId,
+    ]);
+  } catch (e) {
+    res.render("error", { errorMessage: "Unable to delete customer" });
+  }
+});
 
 main();
 
